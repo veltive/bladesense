@@ -1,0 +1,71 @@
+{
+  "name": "tlint-inline",
+  "displayName": "Tlint Inline",
+  "description": "Tlint inline for VS Code",
+  "version": "0.0.1",
+  "publisher": "Patrick Veltrop",
+  "engines": {
+    "vscode": "^1.99.0"
+  },
+  "categories": [
+    "Programming Languages", "Linters"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "tlint-inline.analyze",
+        "title": "Tlint: Analyze"
+      }
+    ],
+    "configuration": {
+        "type": "object",
+        "title": "Tlint Settings",
+        "properties": {
+          "tlint.binaryPath": {
+            "type": "string",
+            "default": "tlint",
+            "description": "Path to the Tlint binary"
+          },
+          "tlint.args": {
+            "type": "string",
+            "default": "",
+            "description": "Extra arguments to pass to Tlint"
+          },
+          "tlint.errorFormat": {
+            "type": "string",
+            "default": "json",
+            "enum": ["json", "checkstyle"],
+            "description": "Output format for Tlint errors"
+          },
+          "tlint.command": {
+            "type": "string",
+            "default": "",
+            "description": "Custom command to run Tlint (overrides all other settings)"
+          }
+        }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run compile && yarn run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.99.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "eslint": "^9.25.1",
+    "typescript": "^5.8.3",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}
