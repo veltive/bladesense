@@ -118,7 +118,7 @@ function checkBladeSyntax(
             return resolve();
         }
 
-        const scriptPath = path.join(__dirname, '../src', 'blade-syntax-check.php');
+        const scriptPath = path.join(__dirname, '../out', 'blade-syntax-check.php');
         const config = vscode.workspace.getConfiguration('blade');
         const phpBinaryPath = config.get<string>('phpBinaryPath') || 'php';
         const customCommand = config.get<string>('syntaxCheckCommand') || '';
