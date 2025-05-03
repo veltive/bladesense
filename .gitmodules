@@ -1,0 +1,3 @@
+[submodule "submodules/actions"]
+	path = submodules/actions
+	url = git@github.com:veltive/actions.git
