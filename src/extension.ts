@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { runTlint, registerDocumentChangeListener } from './tlintRunner';
+import { analyze, registerDocumentChangeListener } from './bladeSense';
 
 export function activate(context: vscode.ExtensionContext) {
     // Create a status bar item with a spinner
@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
     const activeEditor = vscode.window.activeTextEditor;
     if (activeEditor && (activeEditor.document.languageId === 'php' ||
                          activeEditor.document.fileName.endsWith('.blade.php'))) {
-        runTlint(spinner, activeEditor.document, diagnosticCollection, config);
+        analyze(spinner, activeEditor.document, diagnosticCollection, config);
     }
 
     // Opening a document
@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidOpenTextDocument(doc => {
             // Only run Tlint if the document is PHP/Blade and not being peeked
             if ((doc.languageId === 'php' || doc.fileName.endsWith('.blade.php')) && !isPeeking(doc)) {
-                runTlint(spinner, doc, diagnosticCollection, config, 'Opened document');
+                analyze(spinner, doc, diagnosticCollection, config, 'Opened document');
             }
         })
     );
@@ -35,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.onDidChangeActiveTextEditor(editor => {
             if (editor && (editor.document.languageId === 'php' ||
                           editor.document.fileName.endsWith('.blade.php'))) {
-                runTlint(spinner, editor.document, diagnosticCollection, config, 'Changed active editor');
+                analyze(spinner, editor.document, diagnosticCollection, config, 'Changed active editor');
             }
         })
     );
@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidSaveTextDocument(doc => {
             // Only run Tlint if the document is PHP/Blade and not being peeked
             if ((doc.languageId === 'php' || doc.fileName.endsWith('.blade.php')) && !isPeeking(doc)) {
-                runTlint(spinner, doc, diagnosticCollection, config, 'Saved document');
+                analyze(spinner, doc, diagnosticCollection, config, 'Saved document');
             }
         })
     );
@@ -57,7 +57,20 @@ export function activate(context: vscode.ExtensionContext) {
 
             if (editor && (editor.document.languageId === 'php' ||
                           editor.document.fileName.endsWith('.blade.php'))) {
-                runTlint(spinner, editor.document, diagnosticCollection, config, 'Manually triggered analysis');
+                analyze(spinner, editor.document, diagnosticCollection, config, 'Manually triggered analysis');
+            }
+        })
+    );
+
+    // Command to manually trigger Blade analysis
+    context.subscriptions.push(
+        vscode.commands.registerCommand('blade.analyze', () => {
+            const editor = vscode.window.activeTextEditor;
+
+            if (editor && (editor.document.languageId === 'php' || editor.document.fileName.endsWith('.blade.php'))) {
+                analyze(spinner, editor.document, diagnosticCollection, config, 'Manually triggered analysis');
+            } else {
+                vscode.window.showInformationMessage('No active Blade file to analyze');
             }
         })
     );
