@@ -11,6 +11,11 @@ export function analyze(context: vscode.ExtensionContext, spinner: vscode.Status
     const currentTime = Date.now();
     const fileName = doc.fileName;
 
+    // Don't analyze if it's a plain .php file instead of .blade.php
+    if (!fileName.endsWith('.blade.php')) {
+        return;
+    }
+
     // Use LintedFiles class to manage file tracking
     if (LintedFiles.shouldSkipAnalysis(fileName, currentTime, trigger)) {
         return;
