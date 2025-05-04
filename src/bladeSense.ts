@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
-import * as path from 'path';
 import { LintedFiles } from './lintedFiles';
 
 const outputChannel = vscode.window.createOutputChannel('BladeSense');
@@ -8,7 +7,7 @@ const spinnerLabel = "$(sync~spin) BladeSense:";
 
 LintedFiles.initialize(outputChannel);
 
-export function analyze(spinner: vscode.StatusBarItem, doc: vscode.TextDocument, diagnostics: vscode.DiagnosticCollection, config: vscode.WorkspaceConfiguration, trigger: String | null = null) {
+export function analyze(context: vscode.ExtensionContext, spinner: vscode.StatusBarItem, doc: vscode.TextDocument, diagnostics: vscode.DiagnosticCollection, config: vscode.WorkspaceConfiguration, trigger: String | null = null) {
     const currentTime = Date.now();
     const fileName = doc.fileName;
 
@@ -22,7 +21,7 @@ export function analyze(spinner: vscode.StatusBarItem, doc: vscode.TextDocument,
 
     // Output information about the analysis
     outputInformation(outputChannel, spinner, fileName, trigger);
-    executeTlint(config, vscode.workspace.workspaceFolders?.[0]?.uri.fsPath, doc, diagnostics, spinner, fileName);
+    executeTlint(context, config, vscode.workspace.workspaceFolders?.[0]?.uri.fsPath, doc, diagnostics, spinner, fileName);
 }
 
 function outputInformation(outputChannel: vscode.OutputChannel, spinner: vscode.StatusBarItem, fileName: string, trigger: String | null = null) {
@@ -37,6 +36,7 @@ function outputInformation(outputChannel: vscode.OutputChannel, spinner: vscode.
 }
 
 function executeTlint(
+    context: vscode.ExtensionContext,
     config: vscode.WorkspaceConfiguration,
     workspaceFolder: string | undefined,
     doc: vscode.TextDocument,
@@ -97,7 +97,7 @@ function executeTlint(
         }
 
         if (fileName.endsWith('.blade.php')) {
-            await checkBladeSyntax(workspaceFolder, fileName, fileDiagnostics);
+            await checkBladeSyntax(context, workspaceFolder, fileName, fileDiagnostics);
         }
 
         // ✅ Now set diagnostics *after* everything
@@ -108,6 +108,7 @@ function executeTlint(
 }
 
 function checkBladeSyntax(
+    context: vscode.ExtensionContext,
     workspaceFolder: string | undefined,
     fileName: string,
     diagnostics: vscode.Diagnostic[]
@@ -118,7 +119,10 @@ function checkBladeSyntax(
             return resolve();
         }
 
-        const scriptPath = path.join(__dirname, '../out', 'blade-syntax-check.php');
+        const scriptPath = context.asAbsolutePath('scripts/blade-syntax-check.php');
+
+        outputChannel.appendLine(`[BladeSense] Opening: ${scriptPath}`);
+
         const config = vscode.workspace.getConfiguration('blade');
         const phpBinaryPath = config.get<string>('phpBinaryPath') || 'php';
         const customCommand = config.get<string>('syntaxCheckCommand') || '';

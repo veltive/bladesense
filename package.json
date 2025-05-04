@@ -3,7 +3,7 @@
   "displayName": "BladeSense",
   "description": "BladeSense provides real-time static analysis for Laravel Blade templates using TLint and PHP compilation to catch style and syntax issues as you code.",
   "version": "0.0.1",
-  "publisher": "Patrick Veltrop",
+  "publisher": "veltive",
   "engines": {
     "vscode": "^1.99.0"
   },
@@ -17,7 +17,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "blade.analyze",
+        "command": "bladesense.analyze",
         "title": "BladeSense: Analyze"
       }
     ],
