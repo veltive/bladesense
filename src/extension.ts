@@ -13,6 +13,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     const config = vscode.workspace.getConfiguration('tlint');
 
+    // Run composer install once during activation
+    ensureDependencies(context);
+
     // Activating extension
     const activeEditor = vscode.window.activeTextEditor;
     if (activeEditor && (activeEditor.document.languageId === 'php' ||
@@ -93,3 +96,27 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {}
+
+// Function to ensure composer dependencies are installed
+function ensureDependencies(context: vscode.ExtensionContext) {
+    const outputChannel = vscode.window.createOutputChannel('BladeSense Setup');
+
+    outputChannel.show();
+    outputChannel.appendLine('Checking Blade dependencies...');
+
+    const extensionPath = context.extensionPath;
+
+    // Run composer install in the extension directory
+    const cp = require('child_process');
+
+    cp.exec('composer install', { cwd: extensionPath }, (err: any, stdout: string, stderr: string) => {
+        if (err) {
+            outputChannel.appendLine('Error installing dependencies:');
+            outputChannel.appendLine(stderr);
+            vscode.window.showErrorMessage('BladeSense: Failed to install PHP dependencies. Some features may not work.');
+        } else {
+            outputChannel.appendLine('Dependencies installed successfully.');
+            outputChannel.appendLine(stdout);
+        }
+    });
+}

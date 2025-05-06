@@ -8,37 +8,7 @@ if (!$viewPath || !file_exists($viewPath)) {
     exit(1);
 }
 
-// Look for vendor/autoload.php by traversing up directories
-$autoloadPath = null;
-$currentDir = dirname($viewPath); // Start from the directory of the view file
-$maxDepth = 10; // Prevent infinite loop
-$depth = 0;
-
-while ($depth < $maxDepth && $currentDir !== false) {
-    $testPath = $currentDir . '/vendor/autoload.php';
-
-    if (file_exists($testPath)) {
-        $autoloadPath = $testPath;
-        break;
-    }
-
-    $parentDir = dirname($currentDir);
-
-    if ($parentDir === $currentDir) {
-        // We've reached the root directory
-        break;
-    }
-
-    $currentDir = $parentDir;
-    $depth++;
-}
-
-if (!$autoloadPath) {
-    echo json_encode(['error' => 'Could not find Laravel autoload.php']);
-    exit(1);
-}
-
-require $autoloadPath;
+require __DIR__ . '/../vendor/autoload.php';
 
 use Illuminate\View\Compilers\BladeCompiler;
 use Illuminate\Filesystem\Filesystem;

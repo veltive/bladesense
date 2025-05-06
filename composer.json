@@ -1,0 +1,6 @@
+{
+    "require": {
+        "illuminate/view": "^10.0",
+        "illuminate/filesystem": "^10.0"
+    }
+}
