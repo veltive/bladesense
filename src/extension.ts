@@ -101,7 +101,6 @@ export function deactivate() {}
 function ensureDependencies(context: vscode.ExtensionContext) {
     const outputChannel = vscode.window.createOutputChannel('BladeSense Setup');
 
-    outputChannel.show();
     outputChannel.appendLine('Checking Blade dependencies...');
 
     const extensionPath = context.extensionPath;
